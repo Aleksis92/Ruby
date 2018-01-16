@@ -1,28 +1,62 @@
 require 'selenium-webdriver'
 require 'faker'
-Selenium::WebDriver::Chrome.driver_path="C:/Ruby22-x64/bin/chromedriver_win32/chromedriver.exe"
 caps = Selenium::WebDriver::Remote::Capabilities.chrome(:chrome_options => {detach: true})
 
-driver=Selenium::WebDriver.for :chrome, desired_capabilities: caps
-driver1=Selenium::WebDriver.for :chrome, desired_capabilities: caps
+$j = ARGV[0].to_i
+$i=1
 
-name = Faker::Name.first_name
-password = Faker::Internet.password
-#driver1.get("http://mailcatch.com/en/temporary-inbox?box=" + name)
-#sleep(10.0)
-driver.get("https://dev.by/registration")
+while $i < $j do
+  begin
+  driver=Selenium::WebDriver.for :chrome, desired_capabilities: caps
+  driver1=Selenium::WebDriver.for :chrome, desired_capabilities: caps
+  name = Faker::Name.first_name
+  password = Faker::Internet.password
 
-driver.find_element(:id, "user_username").send_keys(name)
+  driver1.get("https://tempail.com/ru/")
 
-driver.find_element(:id, "user_email").send_keys("sdklfjglskdfg@mailcatch.com")
+  mail = driver1.find_element(:id, "eposta_adres").attribute('value')
 
-driver.find_element(:id, "user_password").send_keys(password)
+  sleep(3.0)
 
-driver.find_element(:id, "user_password_confirmation").send_keys(password)
+  driver.get("https://dev.by/registration")
 
-driver.find_element(:id, "user_agreement").click
+  driver.find_element(:id, "user_username").send_keys(name)
 
-driver.find_element(:name, "commit").click
+  driver.find_element(:id, "user_email").send_keys(mail)
 
-#driver.quit
-#driver1.quit
+  driver.find_element(:id, "user_password").send_keys(password)
+
+  driver.find_element(:id, "user_password_confirmation").send_keys(password)
+
+  driver.find_element(:id, "user_agreement").click
+
+  driver.find_element(:name, "commit").click
+
+  sleep(2.0)
+
+  driver.quit
+
+  sleep(12.0)
+
+  driver1.find_element(:class, "fa-reload").click
+
+  sleep(2.0)
+
+  driver1.find_elements(:class, "zaman")[1].click
+
+  sleep(1.0)
+
+  element = driver1.find_element(:id, 'iframe')
+  driver1.switch_to.frame element
+  driver1.find_element(:xpath, "/html/body/p[3]/a").click
+
+  sleep(2.0)
+  driver1.quit
+
+  puts ("login - " + name + ", password - " + password)
+  $i +=1
+
+  rescue
+    puts ("login - " + name + ", password - " + password + ": Fail registration")
+  end
+end
